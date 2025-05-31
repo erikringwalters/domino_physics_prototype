@@ -19,9 +19,10 @@ fn setup(
     mut images: ResMut<Assets<Image>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let light_distance = 1000.0;
-    let floor_length = 100.0;
-    let floor_height = 1.0;
+    let light_distance = 100.;
+    let camera_dsitance = 25.;
+    let floor_length = 100.;
+    let floor_height = 1.;
     let floor_size = vec3(floor_length, floor_height, floor_length);
     let floor_half_size = floor_size * 0.5;
 
@@ -33,12 +34,29 @@ fn setup(
     commands.spawn((
         Name::new("Light"),
         DirectionalLight {
-            illuminance: 2500.0,
+            illuminance: 2500.,
             shadows_enabled: true,
             ..Default::default()
         },
-        Transform::from_xyz(light_distance, light_distance, -light_distance)
-            .looking_at(-Vec3::Y, Vec3::Z),
+        Transform::from_xyz(light_distance, light_distance * 0.5, light_distance )
+            .looking_at( Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            }, Dir3::Y),
+    ));
+
+    commands.spawn((
+        Name::new("Camera"),
+        Camera3d::default(),
+        Transform::from_xyz(camera_dsitance, camera_dsitance, -camera_dsitance).looking_at(
+            Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            },
+            Dir3::Y,
+        ),
     ));
 
     commands.spawn((
@@ -47,22 +65,9 @@ fn setup(
         Collider::cuboid(floor_half_size.x, floor_half_size.y, floor_half_size.z),
         Mesh3d(meshes.add(Cuboid::new(floor_size.x, floor_size.y, floor_size.z))),
         MeshMaterial3d(debug_material.clone()),
-        Transform::from_xyz(0.0, 0., 0.0),
-        Friction::new(1.0),
+        Transform::from_xyz(0., 0., 0.),
+        Friction::new(1.),
         Restitution::new(0.1),
-    ));
-
-    commands.spawn((
-        Name::new("Camera"),
-        Camera3d::default(),
-        Transform::from_xyz(0., 5.0, -15.0).looking_at(
-            Vec3 {
-                x: 0.0,
-                y: 1.0,
-                z: 0.0,
-            },
-            Dir3::Y,
-        ),
     ));
 }
 
