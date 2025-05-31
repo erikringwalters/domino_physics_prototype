@@ -1,12 +1,21 @@
 mod domino;
 mod environment;
-
-use std::f32::consts::PI;
+mod pusher;
 
 use crate::environment::*;
 use bevy::{color::palettes::css, prelude::*};
 use bevy_rapier3d::prelude::*;
+use domino::Domino;
+use pusher::Pusher;
 // use bevy_simple_subsecond_system::{SimpleSubsecondPlugin, hot};
+
+const DOMINO_SIZE: Vec3 = Vec3::new(1., 2., 0.4);
+const DOMINO_HALF_SIZE: Vec3 = Vec3::new(
+    DOMINO_SIZE.x * 0.5,
+    DOMINO_SIZE.y * 0.5,
+    DOMINO_SIZE.z * 0.5,
+);
+const DOMINO_DISTANCE: f32 = DOMINO_SIZE.z * 4.;
 
 fn main() {
     App::new()
@@ -14,7 +23,8 @@ fn main() {
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
         // .add_plugins(SimpleSubsecondPlugin::default())
         .add_plugins(EnvironmentPlugin)
-        .add_systems(Startup, spawn_dominos)
+        .add_systems(Startup, (spawn_dominos, spawn_pusher))
+        .add_systems(FixedUpdate, move_pusher)
         .run();
 }
 
@@ -29,16 +39,42 @@ fn spawn_dominos(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let domino_size = vec3(1., 2., 0.4);
-    let domino_half_size = domino_size * 0.5;
-    let domino_distance = domino_size.z * 5.;
-    for i in 0..10 {
-        commands.spawn((
-            RigidBody::Dynamic,
-            Collider::cuboid(domino_half_size.x, domino_half_size.y, domino_half_size.z),
-            Mesh3d(meshes.add(Cuboid::new(domino_size.x, domino_size.y, domino_size.z))),
-            MeshMaterial3d(materials.add(Color::from(css::BROWN))),
-            Transform::from_xyz(0., domino_size.y * 2., i as f32 * domino_distance), // .rotate_axis(Dir3::Y, PI * 0.5),
-        ));
+    for i in 0..20 {
+        if i != 5 {
+            commands.spawn((
+                RigidBody::Dynamic,
+                Collider::cuboid(DOMINO_HALF_SIZE.x, DOMINO_HALF_SIZE.y, DOMINO_HALF_SIZE.z),
+                Mesh3d(meshes.add(Cuboid::new(DOMINO_SIZE.x, DOMINO_SIZE.y, DOMINO_SIZE.z))),
+                MeshMaterial3d(materials.add(Color::from(css::GHOST_WHITE))),
+                Domino,
+                Transform::from_xyz(0., DOMINO_SIZE.y, i as f32 * DOMINO_DISTANCE), // .rotate_axis(Dir3::Y, PI * 0.5),
+            ));
+        }
+    }
+}
+
+fn spawn_pusher(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    let radius = 0.25;
+    commands.spawn((
+        RigidBody::Fixed,
+        Collider::ball(radius),
+        Mesh3d(meshes.add(Sphere::new(radius))),
+        MeshMaterial3d(materials.add(Color::from(css::RED))),
+        Pusher,
+        Transform::from_xyz(0., DOMINO_SIZE.y, -2.),
+    ));
+}
+
+fn move_pusher(mut query: Query<&mut Transform, With<Pusher>>) {
+    let Ok(mut transform) = query.single_mut() else {
+        println!("Could not query position!");
+        return;
+    };
+    if transform.translation.z <= 0.5 {
+        transform.translation.z += 0.05;
     }
 }

@@ -1,6 +1,5 @@
 use bevy::{
     asset::RenderAssetUsages,
-    math::ops::floor,
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
@@ -21,7 +20,7 @@ fn setup(
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     let light_distance = 1000.0;
-    let floor_length = 50.0;
+    let floor_length = 100.0;
     let floor_height = 1.0;
     let floor_size = vec3(floor_length, floor_height, floor_length);
     let floor_half_size = floor_size * 0.5;
