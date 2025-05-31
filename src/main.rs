@@ -7,7 +7,6 @@ use bevy::{color::palettes::css, prelude::*};
 use bevy_rapier3d::prelude::*;
 use domino::Domino;
 use pusher::Pusher;
-// use bevy_simple_subsecond_system::{SimpleSubsecondPlugin, hot};
 
 const DOMINO_SIZE: Vec3 = Vec3::new(1., 2., 0.4);
 const DOMINO_HALF_SIZE: Vec3 = Vec3::new(
@@ -21,7 +20,6 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-        // .add_plugins(SimpleSubsecondPlugin::default())
         .add_plugins(EnvironmentPlugin)
         .add_systems(Startup, (spawn_dominos, spawn_pusher))
         .add_systems(FixedUpdate, move_pusher)
@@ -65,7 +63,7 @@ fn spawn_pusher(
         Mesh3d(meshes.add(Sphere::new(radius))),
         MeshMaterial3d(materials.add(Color::from(css::RED))),
         Pusher,
-        Transform::from_xyz(0., DOMINO_SIZE.y, -2.),
+        Transform::from_xyz(0., DOMINO_SIZE.y, -4.),
     ));
 }
 

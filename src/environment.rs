@@ -38,7 +38,7 @@ fn setup(
             shadows_enabled: true,
             ..Default::default()
         },
-        Transform::from_xyz(light_distance, light_distance * 0.5, light_distance )
+        Transform::from_xyz(-light_distance, light_distance * 0.5, light_distance )
             .looking_at( Vec3 {
                 x: 0.,
                 y: 0.,
@@ -49,7 +49,7 @@ fn setup(
     commands.spawn((
         Name::new("Camera"),
         Camera3d::default(),
-        Transform::from_xyz(camera_dsitance, camera_dsitance, -camera_dsitance).looking_at(
+        Transform::from_xyz(-camera_dsitance, camera_dsitance * 0.5, -camera_dsitance).looking_at(
             Vec3 {
                 x: 0.,
                 y: 0.,
