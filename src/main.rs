@@ -8,13 +8,13 @@ use bevy_rapier3d::prelude::*;
 use domino::Domino;
 use pusher::Pusher;
 
-const DOMINO_SIZE: Vec3 = Vec3::new(1., 2., 0.4);
+const DOMINO_SIZE: Vec3 = Vec3::new(1., 2., 0.3);
 const DOMINO_HALF_SIZE: Vec3 = Vec3::new(
     DOMINO_SIZE.x * 0.5,
     DOMINO_SIZE.y * 0.5,
     DOMINO_SIZE.z * 0.5,
 );
-const DOMINO_DISTANCE: f32 = DOMINO_SIZE.z * 4.;
+const DOMINO_DISTANCE: f32 = DOMINO_SIZE.y * 0.75;
 
 fn main() {
     App::new()
@@ -25,12 +25,6 @@ fn main() {
         .add_systems(FixedUpdate, move_pusher)
         .run();
 }
-
-// #[hot]
-// fn update() {
-//     let foo = 5;
-//     println!("Hello the value of foo is: {:?}", foo);
-// }
 
 fn spawn_dominos(
     mut commands: Commands,
@@ -45,7 +39,7 @@ fn spawn_dominos(
                 Mesh3d(meshes.add(Cuboid::new(DOMINO_SIZE.x, DOMINO_SIZE.y, DOMINO_SIZE.z))),
                 MeshMaterial3d(materials.add(Color::from(css::GHOST_WHITE))),
                 Domino,
-                Transform::from_xyz(0., DOMINO_SIZE.y, i as f32 * DOMINO_DISTANCE), // .rotate_axis(Dir3::Y, PI * 0.5),
+                Transform::from_xyz(0., DOMINO_SIZE.y, i as f32 * DOMINO_DISTANCE),
             ));
         }
     }
